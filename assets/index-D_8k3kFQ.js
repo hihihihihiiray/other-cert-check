@@ -1,4 +1,3 @@
-
 (function() {
     const e = document.createElement("link").relList;
     if (e && e.supports && e.supports("modulepreload")) return;
@@ -4482,9 +4481,6 @@ const Wl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAABHPGVmAA
                 label: "证书名称",
                 value: t.result.certName
             }, null, 8, ["value"]), ht(fe, {
-                label: "SHA-1",
-                value: t.result.certSha1
-            }, null, 8, ["value"]), ht(fe, {
                 label: "过期时间",
                 value: t.result.certExpireDate
             }, null, 8, ["value"]), t.result.statusKind === "revoked" ? (ut(), Yt(fe, {
@@ -4647,18 +4643,6 @@ const Wl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAABHPGVmAA
         ["__scopeId", "data-v-516f8432"]
     ]),
     Eu = "https://iosadmins.p12check.com/api";
-async function _computeSha1(file) {
-    if (!file || !(file instanceof Blob)) return null;
-    try {
-        const buf = await file.arrayBuffer();
-        const hashBuf = await crypto.subtle.digest("SHA-1", buf);
-        return Array.from(new Uint8Array(hashBuf))
-            .map(b => b.toString(16).padStart(2, "0"))
-            .join(":").toUpperCase();
-    } catch (e) {
-        return null;
-    }
-}
 async function Au(t) {
     var n, i, s;
     const e = new FormData;
@@ -4668,10 +4652,7 @@ async function Au(t) {
         body: e
     });
     if (!r.ok) throw new Error(`接口请求失败，状态码：${r.status}`);
-    const _json = await r.json();
-    const _sourceFile = t.p12 || t.mp || null;
-    _json._sha1 = await _computeSha1(_sourceFile);
-    return _json
+    return await r.json()
 }
 var kr = typeof globalThis != "undefined" ? globalThis : typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : {};
 
@@ -7936,7 +7917,6 @@ function Pu(t) {
         statusLabel: "正常",
         certName: t.certName,
         certExpireDate: t.notAfter,
-        certSha1: t._sha1 || null,
         hasProvisionDetail: !1
     };
     return t.state === "吊销" ? (e.statusKind = "revoked", e.statusLabel = "撤销", e.revokedDate = t.revokedDate, e.statusExplain = t.revokedReason) : t.state === "" ? (e.statusKind = "unknown", e.statusLabel = "未知") : (e.statusKind = "normal", e.statusLabel = "正常"), t.certType ? e.certType = `${t.certType}(国家:${(r=t.attribution)!=null?r:""})` : t.attribution && (e.certType = t.attribution), t.expirationDate && (e.hasProvisionDetail = !0, e.provisionExpireDate = t.expirationDate, e.provisionIdentifier = t.appid), t.cFBundleName && (e.hasProvisionDetail = !0, e.provisionExpireDate = t.expirationDate, e.revokedDate = t.revokedDate, e.provisionIdentifier = t.appid, e.appName = t.cFBundleName, e.bundleId = t.cFBundleIdentifier), e
