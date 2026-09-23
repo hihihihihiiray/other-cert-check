@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>iOS 证书检测工具｜在线验证 IPA / P12 / 企业证书状态｜防掉签检测</title>
+    <meta
+      name="description"
+      content="专业苹果开发者证书检测平台，实时验证 iOS 证书有效性，支持 IPA 文件、P12 证书、描述文件及企业证书状态查询，精准识别证书掉签风险。"
+    />
+    <meta name="keywords" content="iOS证书检测,IPA证书验证,P12证书检查,描述文件验证,企业证书状态,苹果签名检测" />
+    <script type="module" crossorigin src="/assets/index-D_8k3kFQ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BHIpW_cH.css">
+  </head>
+  <body>
+    <div id="app"></div>
+    <!--
+      app-info-parser 官方未提供可在 Vite/打包器环境下直接使用的 ESM 版本——
+      其 npm 包内部依赖了 Node 内置模块（如 util.inherits），在浏览器端打包后会报错
+      "util.inherits is not a function"，且作者在 npm 页面上明确说明这是已知且无法修复的问题
+      （部分底层依赖已不再维护，无法适配浏览器环境）。
+      因此这里改用官方提供的浏览器端预编译版本（dist/app-info-parser.js，已用 browserify 打包好
+      所有依赖，可直接在 <script> 标签中使用），挂载为全局 window.AppInfoParser，
+      与原始项目（static/js/app-info-parser.js）的引用方式完全一致。
+    -->
+    <script src="/app-info-parser.js"></script>
+  </body>
+</html>
