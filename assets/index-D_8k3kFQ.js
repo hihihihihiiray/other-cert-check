@@ -4481,9 +4481,6 @@ const Wl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAABHPGVmAA
                 label: "证书名称",
                 value: t.result.certName
             }, null, 8, ["value"]), ht(fe, {
-                label: "SHA-1",
-                value: t.result.certSha1
-            }, null, 8, ["value"]), ht(fe, {
                 label: "过期时间",
                 value: t.result.certExpireDate
             }, null, 8, ["value"]), t.result.statusKind === "revoked" ? (ut(), Yt(fe, {
@@ -4644,27 +4641,18 @@ const Wl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAABHPGVmAA
     }),
     Cu = Gt(Su, [
         ["__scopeId", "data-v-516f8432"]
-    ]);
+    ]),
+    Eu = "https://iosadmins.p12check.com/api";
 async function Au(t) {
+    var n, i, s;
     const e = new FormData;
-    const _file = t.p12 || t.mp || null;
-    if (_file) e.append("file", _file);
-    e.append("p12pwd", t.password != null ? t.password : "");
-    if (t.plist) e.append("infofile", t.plist);
-    const r = await fetch("https://p12.ee/icapi/icheck/upload", {
+    e.append("p12", (n = t.p12) != null ? n : ""), e.append("password", (i = t.password) != null ? i : ""), e.append("mp", (s = t.mp) != null ? s : "");
+    const r = await fetch(`${Eu}/checkcert`, {
         method: "POST",
-        body: e,
-        headers: {
-            "Origin": "https://p12.ee",
-            "Referer": "https://p12.ee/"
-        }
+        body: e
     });
     if (!r.ok) throw new Error(`接口请求失败，状态码：${r.status}`);
-    const _json = await r.json();
-    if (_json.code === 0 && _json.data) {
-        _json._apiData = _json.data;
-    }
-    return _json
+    return await r.json()
 }
 var kr = typeof globalThis != "undefined" ? globalThis : typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : {};
 
@@ -7923,37 +7911,15 @@ async function Ru(t) {
 }
 
 function Pu(t) {
-    const d = t._apiData || {};
+    var r;
     const e = {
         statusKind: "normal",
         statusLabel: "正常",
-        certName: d.teamName || "",
-        certExpireDate: d.pemExp || "",
-        certSha1: d.pemMD5 ? d.pemMD5.toUpperCase().match(/.{2}/g).join(":") : null,
+        certName: t.certName,
+        certExpireDate: t.notAfter,
         hasProvisionDetail: !1
     };
-    if (d.pemStatus === "revoked") {
-        e.statusKind = "revoked";
-        e.statusLabel = "撤销";
-        e.revokedDate = d.revokeTime || "";
-    } else if (!d.pemStatus || d.pemStatus === "unknown") {
-        e.statusKind = "unknown";
-        e.statusLabel = "未知";
-    }
-    if (d.teamType || d.country) {
-        e.certType = [d.teamType, d.country ? `国家:${d.country}` : ""].filter(Boolean).join(" ");
-    }
-    if (d.mpExp || d.mpAppID) {
-        e.hasProvisionDetail = !0;
-        e.provisionExpireDate = d.mpExp || "";
-        e.provisionIdentifier = d.mpAppID || "";
-    }
-    if (d.ipaName || d.ipaBID) {
-        e.hasProvisionDetail = !0;
-        e.appName = d.ipaName || "";
-        e.bundleId = d.ipaBID || "";
-    }
-    return e
+    return t.state === "吊销" ? (e.statusKind = "revoked", e.statusLabel = "撤销", e.revokedDate = t.revokedDate, e.statusExplain = t.revokedReason) : t.state === "" ? (e.statusKind = "unknown", e.statusLabel = "未知") : (e.statusKind = "normal", e.statusLabel = "正常"), t.certType ? e.certType = `${t.certType}(国家:${(r=t.attribution)!=null?r:""})` : t.attribution && (e.certType = t.attribution), t.expirationDate && (e.hasProvisionDetail = !0, e.provisionExpireDate = t.expirationDate, e.provisionIdentifier = t.appid), t.cFBundleName && (e.hasProvisionDetail = !0, e.provisionExpireDate = t.expirationDate, e.revokedDate = t.revokedDate, e.provisionIdentifier = t.appid, e.appName = t.cFBundleName, e.bundleId = t.cFBundleIdentifier), e
 }
 const zu = ["ipa", "p12", "mobileprovision"];
 
@@ -7996,7 +7962,7 @@ function Lu() {
             if (b.code === 0) {
                 const p = Pu(b);
                 p.appIcon = s.value, r.value = p, e.value = ""
-            } else r.value = null, e.value = b.message || "检测失败，请重试"
+            } else r.value = null, e.value = b.msg || "检测失败，请重试"
         } catch (b) {
             r.value = null, e.value = b instanceof Error ? b.message : "网络异常，请稍后重试"
         } finally {
